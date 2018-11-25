@@ -5,6 +5,9 @@ function resolve (dir) {
 }
 
 module.exports = {
+  devServer: {
+    proxy: 'https://c.y.qq.com'
+  },
   configureWebpack: {
     resolve: {
       alias: {

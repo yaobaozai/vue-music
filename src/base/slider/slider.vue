@@ -5,14 +5,23 @@
       </slot>
     </div>
     <div class="dots">
+      <span class="dot" v-for="(item, index) in dots" :key="index"
+      :class="{active: currentPageIndex === index}"></span>
     </div>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-import {addClass} from 'common/js/dom'
+import { addClass } from 'common/js/dom'
 import BScroll from 'better-scroll'
+
 export default {
+  data () {
+    return {
+      dots: [],
+      currentPageIndex: 0
+    }
+  },
   props: {
     loop: {
       type: Boolean,
@@ -27,19 +36,35 @@ export default {
       default: 4000
     }
   },
-  mounted() {
+  mounted () {
     setTimeout(() => {
       this._setSliderWidth()
+      this._initDots()
       this._initSlider()
+
+      if (this.autoPlay) {
+        this._play()
+      }
     }, 20)
+
+    window.addEventListener('resize', () => {
+      if (!this.slider) {
+        return
+      }
+      this._setSliderWidth(true)
+      this.slider.refresh()
+    })
+  },
+  destroyed () {
+    clearTimeout(this.timer)
   },
   methods: {
-    _setSliderWidth() {
+    _setSliderWidth (isResize) {
       this.children = this.$refs.sliderGroup.children
 
       let width = 0
       let sliderWidth = this.$refs.slider.clientWidth
-      for(let i = 0; i < this.children.length; i++) {
+      for (let i = 0; i < this.children.length; i++) {
         let child = this.children[i]
         addClass(child, 'slider-item')
 
@@ -47,12 +72,15 @@ export default {
         width += sliderWidth
       }
 
-      if (this.loop) {
+      if (this.loop && !isResize) {
         width += 2 * sliderWidth
       }
       this.$refs.sliderGroup.style.width = width + 'px'
     },
-    _initSlider() {
+    _initDots () {
+      this.dots = new Array(this.children.length)
+    },
+    _initSlider () {
       this.slider = new BScroll(this.$refs.slider, {
         scrollX: true,
         scrollY: false,
@@ -63,6 +91,28 @@ export default {
         snapSpeed: 400,
         click: true
       })
+
+      this.slider.on('scrollEnd', () => {
+        let pageIndex = this.slider.getCurrentPage().pageX
+        if (this.loop) {
+          pageIndex -= 1
+        }
+        this.currentPageIndex = pageIndex
+
+        if (this.autoPlay) {
+          clearTimeout(this.timer)
+          this._play()
+        }
+      })
+    },
+    _play () {
+      let pageIndex = this.currentPageIndex + 1
+      if (this.loop) {
+        pageIndex += 1
+      }
+      this.timer = setTimeout(() => {
+        this.slider.goToPage(pageIndex, 0, 400)
+      }, this.interval)
     }
   }
 }
