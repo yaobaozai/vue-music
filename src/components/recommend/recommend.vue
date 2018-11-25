@@ -1,7 +1,7 @@
 <template>
   <div class="recommend" ref="recommend">
     <div class="recommend-content">
-      <div class="slider-wrapper" ref="sliderWrapper">
+      <div v-if="recommends.length" class="slider-wrapper" ref="sliderWrapper">
         <slider>
           <div v-for="(item, index) in recommends" :key="index">
             <a :href="item.linkUrl">
