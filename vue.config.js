@@ -6,7 +6,13 @@ function resolve (dir) {
 
 module.exports = {
   devServer: {
-    proxy: 'https://c.y.qq.com'
+    proxy: {
+      '/api/getDiscList': {
+        target: 'http://localhost:3017',
+        ws: true,
+        changeOrigin: true
+      }
+    }
   },
   configureWebpack: {
     resolve: {

@@ -15,7 +15,7 @@ export function getRecommend () {
 }
 
 export function getDiscList () {
-  const url = '/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+  const url = '/api/getDiscList'
 
   const data = Object.assign({}, commonParams, {
     platform: 'yqq',
