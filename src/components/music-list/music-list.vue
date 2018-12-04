@@ -21,7 +21,7 @@
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
-      </div>
+      </div> 
     </scroll>
   </div>
 </template>
@@ -87,7 +87,16 @@ export default {
     },
     back() {
       this.$router.back()
-    }
+    },
+    selectItem(item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ])
   },
   watch: {
     scrollY(newVal) {
